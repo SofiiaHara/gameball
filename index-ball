@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Catch the Ball Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const width = canvas.width = window.innerWidth;
+    const height = canvas.height = window.innerHeight;
+
+    const paddleWidth = 100;
+    const paddleHeight = 10;
+    const paddleSpeed = 8;
+
+    let paddleX = (width - paddleWidth) / 2;
+    let isLeftKeyPressed = false;
+    let isRightKeyPressed = false;
+
+    const ballRadius = 10;
+    const ballSpeed = 4;
+    let ballX = width / 2;
+    let ballY = ballRadius + 5;
+
+    function drawPaddle() {
+      ctx.fillStyle = "black";
+      ctx.fillRect(paddleX, height - paddleHeight, paddleWidth, paddleHeight);
+    }
+
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function movePaddle() {
+      if (isLeftKeyPressed && paddleX > 0) {
+        paddleX -= paddleSpeed;
+      }
+      if (isRightKeyPressed && paddleX < width - paddleWidth) {
+        paddleX += paddleSpeed;
+      }
+    }
+
+    function moveBall() {
+      ballY += ballSpeed;
+
+      if (ballY + ballRadius > height - paddleHeight) {
+        if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+          // Ball is caught, reset its position
+          ballY = ballRadius + 5;
+        } else {
+          // Ball is missed, reset its position
+          ballY = ballRadius + 5;
+        }
+      }
+    }
+
+    function drawScene() {
+      ctx.clearRect(0, 0, width, height);
+      drawPaddle();
+      drawBall();
+    }
+
+    function gameLoop() {
+      movePaddle();
+      moveBall();
+      drawScene();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Keyboard event listeners
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        isLeftKeyPressed = true;
+      } else if (e.key === "ArrowRight") {
+        isRightKeyPressed = true;
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "ArrowLeft") {
+        isLeftKeyPressed = false;
+      } else if (e.key === "ArrowRight") {
+        isRightKeyPressed = false;
+      }
+    });
+
+    // Start the game loop
+    gameLoop();
+  </script>
+</body>
+</html>
